@@ -9,6 +9,16 @@ const rainbowGradient = {
   WebkitTextFillColor: "transparent",
 };
 
+const getBadgeClass = (badge) => {
+  if (!badge) return "";
+  const b = badge.toLowerCase();
+  if (b.includes("thư viện trưởng") || b.includes("đại thủ thư") || b.includes("người khai thiên")) return "badge-vip-legendary text-white";
+  if (b.includes("thủ thư") || b.includes("hiền giả") || b.includes("học giả") || b.includes("diễn thuyết")) return "badge-vip-rare text-white";
+  if (b.includes("đại hiền giả") || b.includes("chứng witness")) return "badge-vip-epic text-white";
+  if (b.includes("gìn giữ") || b.includes("thủ hộ") || b.includes("canh giữ")) return "badge-vip-divine text-emerald-950 font-black";
+  return "badge-vip-common text-emerald-700 bg-emerald-50 border border-emerald-100";
+};
+
 const HomeComments = ({ comments = [], onAddComment, user }) => {
   const [content, setContent] = useState("");
   const [allComments, setAllComments] = useState(comments);
@@ -69,7 +79,7 @@ const HomeComments = ({ comments = [], onAddComment, user }) => {
             .map((comment) => (
               <div
                 key={comment.id || Math.random()}
-                className="flex gap-4 p-4 rounded-lg shadow border border-gray-100"
+                className="flex gap-4 p-4 rounded-lg shadow border border-gray-100 animate-fade-in"
                 style={{
                   background: "linear-gradient(to right, #f5e1ff, #ffe1f0)",
                 }}
@@ -84,18 +94,16 @@ const HomeComments = ({ comments = [], onAddComment, user }) => {
                           : "https://placehold.co/48x48?text=User"
                       }
                       alt={comment.User?.username || "Ẩn danh"}
-                      className="w-12 h-12 rounded-full border"
+                      className={`w-12 h-12 rounded-full border object-cover ${
+                        comment.User?.avatarFrame === "gold" ? "avatar-frame-gold" : 
+                        comment.User?.avatarFrame === "emerald" ? "avatar-frame-emerald" : 
+                        comment.User?.avatarFrame === "rainbow" ? "avatar-frame-rainbow" : 
+                        comment.User?.avatarFrame ? `avatar-frame-${comment.User.avatarFrame}` : ""
+                      }`}
                       onError={(e) => {
                         e.target.src = "https://placehold.co/48x48?text=User";
                       }}
                     />
-                    {comment.User?.avatarFrame && (
-                      <img
-                        src={comment.User.avatarFrame}
-                        alt=""
-                        className="absolute inset-0 w-12 h-12 rounded-full pointer-events-none"
-                      />
-                    )}
                   </div>
                 </div>
 
@@ -104,43 +112,40 @@ const HomeComments = ({ comments = [], onAddComment, user }) => {
                   {/* Tên + Badge */}
                   <div className="flex items-center gap-2 flex-wrap">
                     <span
-                      className="font-semibold text-base"
-                      style={{
-                        color: "black",
-                      }}
+                      className={`font-semibold text-base ${
+                        comment.User?.nameEffect === 'rainbow' ? 'animate-rainbow-text font-bold' :
+                        comment.User?.nameEffect === 'glow' ? 'name-glow font-bold' :
+                        comment.User?.nameEffect ? `name-effect-${comment.User.nameEffect}` : ''
+                      }`}
+                      style={
+                        comment.User?.nameColor && !['rainbow', 'thien_ha', 'tinh_hai_effect', 'dong_chay_van_menh'].includes(comment.User?.nameEffect)
+                          ? { color: comment.User.nameColor }
+                          : { color: "black" }
+                      }
                     >
                       {comment.User?.username || "Ẩn danh"}
                     </span>
                     {comment.User?.badge && (
-                      <span
-                        className="text-xs px-2 py-0.5 rounded-full"
-                        style={{
-                          backgroundColor: "#fee2e2", 
-                          color: "#b91c1c", 
-                        }}
-                      >
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm ${getBadgeClass(comment.User.badge)}`}>
                         {comment.User.badge}
                       </span>
                     )}
                   </div>
 
-                  {/* VIP */}
-                  {comment.User?.vipLevel > 0 && (
+                  {/* Rank Danh Vọng */}
+                  {comment.User?.danhVong && (
                     <div
-                      className="text-xs font-semibold"
-                      style={rainbowGradient}
+                      className="text-xs font-bold text-purple-700 mt-0.5"
                     >
-                      VIP cấp {comment.User.vipLevel}
+                      Rank {comment.User.danhVong}
                     </div>
                   )}
 
-                  {/* Cảnh giới */}
+                  {/* Cảnh giới & Cấp độ */}
                   <div
-                    className="text-xs font-semibold"
-                    style={rainbowGradient}
+                    className="text-xs font-semibold text-emerald-800"
                   >
-                    {comment.User?.tuVi || "Phàm Nhân"} -{" "}
-                    {comment.User?.realm || "Phàm Nhân"}
+                    Cấp {comment.User?.level || 1} {comment.User?.khuVuc ? `• ${comment.User.khuVuc}` : ""}
                   </div>
 
                   {/* Nội dung comment */}

@@ -7,7 +7,7 @@
     "web": "vite",
     "api": "npx kill-port 3001 && npm --prefix backend run dev",
     "dev": "concurrently -k -n WEB,API -c cyan,green \"npm run web\" \"npm run api\"",
-    "build": "vite build", 
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -20,7 +20,7 @@
     "express": "^5.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.12.0",
+    "react-icons": "^5.7.0",
     "react-router-dom": "^7.6.2",
     "swiper": "^10.3.1"
   },

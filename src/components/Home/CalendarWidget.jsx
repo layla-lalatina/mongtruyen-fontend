@@ -35,10 +35,10 @@ const CalendarWidget = () => {
 
   return (
     <div className="w-full">
-      <section className="bg-white rounded-xl shadow-lg p-6">
+      <section className="bg-white/85 backdrop-blur-sm rounded-xl border border-emerald-50 shadow p-6">
         {/* Tiêu đề */}
-        <h3 className="font-bold text-lg mb-4 text-purple-700 border-b-2 border-pink-200 pb-2">
-          📅 Thời gian + Thông báo Từ Đại Đạo
+        <h3 className="font-bold text-lg mb-4 text-emerald-700 border-b border-emerald-100 pb-2 flex items-center gap-1.5">
+          📅 Thời gian + Thông báo từ Đại Đạo
         </h3>
 
         {/* Ngày giờ hiện tại */}
@@ -51,12 +51,12 @@ const CalendarWidget = () => {
               day: "numeric",
             })}
           </p>
-          <p>{currentTime.toLocaleTimeString("vi-VN")}</p>
+          <p className="font-semibold text-emerald-600 mt-1">{currentTime.toLocaleTimeString("vi-VN")}</p>
         </div>
 
         {/* Lời chúc */}
-        <div className="mt-4 p-3 bg-purple-50 rounded text-purple-700 text-sm">
-          🌟 <em>{quote}</em>
+        <div className="mt-4 p-3.5 bg-emerald-50/70 border border-emerald-100 rounded-lg text-emerald-800 text-sm shadow-inner">
+          🌟 <span className="font-medium">{quote}</span>
         </div>
       </section>
     </div>

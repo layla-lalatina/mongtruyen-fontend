@@ -9,17 +9,33 @@ export const useFollowStatus = ({ user, slug }) => {
 
   // Kiểm tra trạng thái theo dõi khi component mount hoặc slug thay đổi
   useEffect(() => {
-    if (!user?.token) return;
+    if (!user?.token || !slug) {
+      setIsFollowing(false);
+      return;
+    }
 
     fetch(`${API_BASE_URL}/api/user/is-following/${slug}`, {
       headers: { Authorization: `Bearer ${user.token}` },
     })
       .then((res) => res.json())
-      .then((data) => setIsFollowing(data.isFollowing))
+      .then((data) => setIsFollowing(!!data.isFollowing))
       .catch((err) => {
         console.error("Lỗi khi kiểm tra theo dõi:", err);
       });
   }, [user, slug]);
+
+  // Lắng nghe sự kiện đồng bộ theo dõi tức thì từ Local Agent (AIChatWidget)
+  useEffect(() => {
+    const handleAgentStateUpdate = (e) => {
+      const act = e.detail;
+      if (!act) return;
+      if (act.type === "BOOKMARK_CHANGED" && (!act.slug || act.slug === slug)) {
+        setIsFollowing(!!act.isFollowing);
+      }
+    };
+    window.addEventListener("agent-state-updated", handleAgentStateUpdate);
+    return () => window.removeEventListener("agent-state-updated", handleAgentStateUpdate);
+  }, [slug]);
 
   // Toggle follow/unfollow
   const toggleFollow = async () => {
@@ -27,6 +43,8 @@ export const useFollowStatus = ({ user, slug }) => {
       navigate("/login");
       return;
     }
+    const nextFollowing = !isFollowing;
+    setIsFollowing(nextFollowing);
     try {
       const endpoint = isFollowing ? "/unfollow" : "/follow";
       const res = await axios.post(
@@ -34,15 +52,18 @@ export const useFollowStatus = ({ user, slug }) => {
         { slug },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
-      console.log("Follow API response:", res.data);
-      // Gọi lại API lấy danh sách theo dõi để kiểm tra
-      const followedRes = await fetch(`${API_BASE_URL}/api/user/followed`, {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
-      const followedData = await followedRes.json();
-      console.log("Followed comics after update:", followedData);
-      setIsFollowing(!isFollowing);
+      window.dispatchEvent(
+        new CustomEvent("agent-state-updated", {
+          detail: {
+            type: "BOOKMARK_CHANGED",
+            slug,
+            isFollowing: nextFollowing,
+            followers: res.data?.followers,
+          },
+        })
+      );
     } catch (err) {
+      setIsFollowing(!nextFollowing);
       console.error("Lỗi khi thay đổi trạng thái theo dõi:", err);
     }
   };

@@ -7,11 +7,11 @@ export const useRandomComics = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("https://otruyenapi.com/v1/api/home")
+    fetch(`${API_BASE_URL}/api/comic/comics?limit=30`)
       .then((res) => res.json())
       .then((data) => {
-        const items = data.data?.items?.flatMap((i) => i.comics) || [];
-        const shuffled = items.sort(() => 0.5 - Math.random());
+        const items = data.comics || data.data?.items || [];
+        const shuffled = [...items].sort(() => 0.5 - Math.random());
         setComics(shuffled.slice(0, 10));
       })
       .catch((err) => {

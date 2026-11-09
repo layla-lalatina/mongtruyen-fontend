@@ -1,41 +1,65 @@
-// src/hooks/useReadingHistory.js
 import { useEffect, useState, useRef } from "react";
 import { API_BASE_URL } from "../../../../config";
+import { getComicThumbUrl } from "../../../utils/imageHelpers";
 
 export const useReadingHistory = ({ user, slug, chapter }) => {
   const [readingHistory, setReadingHistory] = useState([]);
   const [historyComics, setHistoryComics] = useState({});
   const lastSaved = useRef({ slug: null, chapter: null });
 
-  // Gửi lịch sử đọc và lấy danh sách lịch sử
+  // Gửi lịch sử đọc và lấy danh sách lịch sử (Hỗ trợ cả User & Guest)
   useEffect(() => {
-    if (!user?.token || !slug || !chapter) return;
+    if (!slug || !chapter) return;
     if (lastSaved.current.slug === slug && lastSaved.current.chapter === chapter) {
       return;
     }
     lastSaved.current = { slug, chapter };
 
     const saveAndFetchHistory = async () => {
-      try {
-        // Gửi lịch sử đọc
-        await fetch(`${API_BASE_URL}/api/user/history`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-          body: JSON.stringify({ slug, chapter }),
-        });
+      if (user?.token) {
+        try {
+          // Gửi lịch sử đọc cho User
+          await fetch(`${API_BASE_URL}/api/user/history`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
+            body: JSON.stringify({ slug, chapter }),
+          });
 
-        // Lấy lịch sử đọc
-        const res = await fetch(`${API_BASE_URL}/api/user/history`, {
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
-        if (!res.ok) throw new Error("Lỗi khi lấy lịch sử đọc");
-        const data = await res.json();
-        setReadingHistory(data.readingHistory || []);
-      } catch (err) {
-        console.error("Lỗi khi tải lịch sử đọc:", err);
+          // Lấy lịch sử đọc từ Server
+          const res = await fetch(`${API_BASE_URL}/api/user/history`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setReadingHistory(data.readingHistory || []);
+          }
+        } catch (err) {
+          console.error("Lỗi khi tải lịch sử đọc:", err);
+        }
+      } else {
+        // Lưu lịch sử đọc cho Khách vãng lai vào localStorage
+        try {
+          const raw = localStorage.getItem("guest_reading_history");
+          let list = raw ? JSON.parse(raw) : [];
+          if (!Array.isArray(list)) list = [];
+
+          // Cập nhật hoặc thêm mới truyện vào lịch sử local
+          const index = list.findIndex((item) => item.slug === slug);
+          const newItem = { slug, chapter, updatedAt: new Date().toISOString() };
+          if (index >= 0) {
+            list[index] = newItem;
+          } else {
+            list.unshift(newItem);
+          }
+
+          localStorage.setItem("guest_reading_history", JSON.stringify(list));
+          setReadingHistory(list);
+        } catch (e) {
+          console.error("Lỗi lưu lịch sử đọc local:", e);
+        }
       }
     };
 
@@ -44,39 +68,26 @@ export const useReadingHistory = ({ user, slug, chapter }) => {
 
   // Lấy thông tin chi tiết (name, thumb_url) cho các truyện trong lịch sử
   useEffect(() => {
-    if (!user?.token || !readingHistory.length) return;
+    if (!readingHistory.length) return;
     const uniqueSlugs = [...new Set(readingHistory.map((h) => h.slug))];
-    Promise.all(
-      uniqueSlugs.map((slug) =>
-        fetch(`https://otruyenapi.com/v1/api/truyen-tranh/${slug}`)
-          .then((res) => {
-            if (!res.ok) throw new Error(`Lỗi khi lấy thông tin truyện ${slug}`);
-            return res.json();
-          })
-          .then((data) => {
-            const thumbUrl = data.data?.item?.thumb_url;
-            const fullThumbUrl = thumbUrl?.startsWith("http")
-              ? thumbUrl
-              : `https://img.otruyenapi.com/uploads/comics/${thumbUrl || "placeholder.jpg"}`;
-            return {
-              slug,
-              name: data.data?.item?.name || slug,
-              thumb_url: fullThumbUrl || "https://via.placeholder.com/120x180?text=No+Img",
-            };
-          })
-          .catch((err) => {
-            console.error(`Lỗi khi lấy thông tin truyện ${slug}:`, err);
-            return { slug, name: slug, thumb_url: "https://via.placeholder.com/120x180?text=No+Img" };
-          })
-      )
-    ).then((arr) => {
-      const obj = {};
-      arr.forEach((item) => {
-        obj[item.slug] = item;
+    if (uniqueSlugs.length === 0) return;
+
+    fetch(`${API_BASE_URL}/api/comic/comics/batch?slugs=${encodeURIComponent(uniqueSlugs.join(","))}`)
+      .then((res) => res.json())
+      .then((batchData) => {
+        const map = {};
+        (batchData.comics || []).forEach((c) => {
+          map[c.slug] = {
+            name: c.name || c.title || c.slug,
+            thumb_url: getComicThumbUrl(c.thumb_url || c.thumbUrl),
+          };
+        });
+        setHistoryComics(map);
+      })
+      .catch((err) => {
+        console.error("Lỗi khi lấy thông tin truyện lịch sử từ CSDL:", err);
       });
-      setHistoryComics(obj);
-    });
-  }, [user, readingHistory]);
+  }, [readingHistory]);
 
   const isChapterRead = (slugToCheck, chapterName) => {
     const history = readingHistory.find((h) => h.slug === slugToCheck);

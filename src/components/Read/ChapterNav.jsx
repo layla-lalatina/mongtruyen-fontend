@@ -1,11 +1,22 @@
-import React from "react";
-import { API_BASE_URL } from "../../../config";
+import React, { useEffect } from "react";
+import {
+  LuPanelLeft,
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronDown,
+  LuHeart,
+  LuBookOpen,
+} from "react-icons/lu";
 
+/**
+ * 🌳 ChapterNav Component (Lucide Icons)
+ * Fixed bottom navigation bar for comic reader with keyboard shortcut support (← / →).
+ */
 const ChapterNav = ({
-  allChapters,
-  currentChapterIdx,
-  prevIdx,
-  nextIdx,
+  allChapters = [],
+  currentChapterIdx = -1,
+  prevIdx = -1,
+  nextIdx = -1,
   goToChapter,
   showChapterList,
   setShowChapterList,
@@ -13,105 +24,123 @@ const ChapterNav = ({
   isFollowing,
   toggleFollow,
   onToggleSidebar,
-  dropdownPlacement = "down",
+  dropdownPlacement = "up",
   className = "",
   style = {},
 }) => {
-const isDropdownUp = dropdownPlacement === "up";
-return (
-<div
-  className={`bg-gradient-to-r from-[#ffffff] to-[#ffffff] w-full shadow ${className}`}
-  style={style}
->
-  <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-2">
-    {/* Nút menu */}
-    <button
-      onClick={onToggleSidebar}
-      className="p-2 rounded bg-blue-300 hover:bg-gray-700/20 text-black lg:hidden"
-      title="Mở menu"
+  const isDropdownUp = dropdownPlacement === "up";
+
+  // Hỗ trợ phím tắt ← (chương trước) và → (chương sau)
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      const tag = (e.target?.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select" || e.target?.isContentEditable) {
+        return;
+      }
+      if (e.key === "ArrowLeft" && prevIdx !== -1) {
+        goToChapter(prevIdx);
+      } else if (e.key === "ArrowRight" && nextIdx !== -1) {
+        goToChapter(nextIdx);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [prevIdx, nextIdx, goToChapter]);
+
+  return (
+    <div
+      className={`bg-white/95 backdrop-blur-md border-t border-emerald-200/80 shadow-2xl shadow-emerald-950/20 w-full z-40 ${className}`}
+      style={style}
     >
-      ☰
-    </button>
-
-    {/* Điều hướng chương */}
-    <div className="flex items-center gap-2">
-      {/* Chương trước */}
-      <button
-        className="p-2 rounded bg-white/20 text-black hover:bg-white/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
-        title={prevIdx !== -1 ? `Chương ${allChapters[prevIdx]?.chapter_name}` : "Không có chương trước"}
-        disabled={prevIdx === -1}
-        onClick={() => goToChapter(prevIdx)}
-      >
-        ⬅
-      </button>
-
-      {/* Tên chương hiện tại */}
-      <div className="relative">
+      <div className="max-w-4xl mx-auto flex items-center justify-between px-3 sm:px-4 py-2 gap-2">
+        {/* Nút mở thanh thông tin bên trái */}
         <button
-          className="px-4 py-2 rounded bg-white/10 border border-white/30 text-black font-semibold flex items-center gap-1 hover:bg-white/20 transition"
-          onClick={() => setShowChapterList((v) => !v)}
+          onClick={onToggleSidebar}
+          className="px-3 py-2 rounded-xl bg-emerald-100/90 hover:bg-emerald-200 text-emerald-900 font-bold border border-emerald-300/60 shadow-sm transition-all flex items-center gap-1.5 active:scale-95 shrink-0"
+          title="Mở / Ẩn bảng thông tin bên trái"
         >
-          Chương {allChapters[currentChapterIdx]?.chapter_name || "?"}
-          <svg
-            width="16"
-            height="16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            className={`transition-transform ${showChapterList ? "rotate-180" : ""}`}
-          >
-            <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <LuPanelLeft className="w-4 h-4 text-emerald-700" />
+          <span className="hidden sm:inline text-xs font-extrabold">Thông tin</span>
         </button>
-        {showChapterList && (
-          <div
-            className={
-              isDropdownUp
-                ? "fixed left-2 right-2 bottom-[76px] z-50 sm:absolute sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:bottom-full sm:mb-2 sm:w-[520px] sm:max-w-[92vw]"
-                : "absolute left-1/2 top-full mt-2 -translate-x-1/2 z-50 w-[360px] max-w-[92vw] sm:w-[520px]"
+
+        {/* Cụm điều hướng chương */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          {/* Nút Chương trước */}
+          <button
+            className="px-2.5 sm:px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 transition-all font-bold disabled:opacity-35 disabled:cursor-not-allowed shadow-sm active:scale-95 flex items-center gap-1 text-xs sm:text-sm"
+            title={
+              prevIdx !== -1
+                ? `Chương trước: Chương ${allChapters[prevIdx]?.chapter_name} (Phím ←)`
+                : "Không có chương trước"
             }
+            disabled={prevIdx === -1}
+            onClick={() => goToChapter(prevIdx)}
           >
-            {renderChapterList()}
+            <LuChevronLeft className="w-4 h-4 stroke-[2.5]" />
+            <span className="hidden md:inline font-extrabold">Trước</span>
+          </button>
+
+          {/* Bộ chọn chương hiện tại */}
+          <div className="relative">
+            <button
+              className="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white font-extrabold flex items-center gap-2 shadow-md shadow-emerald-500/20 transition-all text-xs sm:text-sm active:scale-95"
+              onClick={() => setShowChapterList((v) => !v)}
+            >
+              <LuBookOpen className="w-4 h-4 shrink-0" />
+              <span className="truncate max-w-[130px] sm:max-w-[200px]">
+                Chương {allChapters[currentChapterIdx]?.chapter_name || "?"}
+              </span>
+              <LuChevronDown
+                className={`w-4 h-4 transition-transform duration-200 shrink-0 ${
+                  showChapterList ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {showChapterList && (
+              <div
+                className={
+                  isDropdownUp
+                    ? "fixed left-2 right-2 bottom-[70px] z-50 sm:absolute sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:bottom-full sm:mb-2 sm:w-[540px] sm:max-w-[92vw]"
+                    : "absolute left-1/2 top-full mt-2 -translate-x-1/2 z-50 w-[360px] max-w-[92vw] sm:w-[540px]"
+                }
+              >
+                {renderChapterList()}
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Nút Chương sau */}
+          <button
+            className="px-2.5 sm:px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 transition-all font-bold disabled:opacity-35 disabled:cursor-not-allowed shadow-sm active:scale-95 flex items-center gap-1 text-xs sm:text-sm"
+            title={
+              nextIdx !== -1
+                ? `Chương sau: Chương ${allChapters[nextIdx]?.chapter_name} (Phím →)`
+                : "Không có chương tiếp theo"
+            }
+            disabled={nextIdx === -1}
+            onClick={() => goToChapter(nextIdx)}
+          >
+            <span className="hidden md:inline font-extrabold">Sau</span>
+            <LuChevronRight className="w-4 h-4 stroke-[2.5]" />
+          </button>
+        </div>
+
+        {/* Nút Theo dõi */}
+        <button
+          onClick={toggleFollow}
+          className={`px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm shrink-0 active:scale-95 ${
+            isFollowing
+              ? "bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/20"
+              : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20"
+          }`}
+        >
+          <LuHeart className={`w-4 h-4 ${isFollowing ? "fill-current" : ""}`} />
+          <span className="hidden sm:inline">{isFollowing ? "Đã theo dõi" : "Theo dõi"}</span>
+        </button>
       </div>
-
-      {/* Chương sau */}
-      <button
-        className="p-2 rounded bg-white/20 text-black hover:bg-white/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
-        title={nextIdx !== -1 ? `Chương ${allChapters[nextIdx]?.chapter_name}` : "Không có chương tiếp theo"}
-        disabled={nextIdx === -1}
-        onClick={() => goToChapter(nextIdx)}
-      >
-        ➡
-      </button>
     </div>
-
-    {/* Theo dõi */}
-    <button
-      onClick={toggleFollow}
-      className={`px-3 py-2 rounded font-semibold flex items-center gap-1 text-sm transition ${
-        isFollowing
-          ? "bg-red-500 hover:bg-red-600 text-white"
-          : "bg-yellow-500 hover:bg-yellow-600 text-white"
-      }`}
-    >
-      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-          2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81
-          4.5 2.09C13.09 3.81 14.76 3 16.5
-          3 19.58 3 22 5.42 22 8.5c0
-          3.78-3.4 6.86-8.55 11.54L12
-          21.35z" />
-      </svg>
-      {isFollowing ? "Bỏ theo dõi" : "Theo dõi"}
-    </button>
-  </div>
-</div>
-
-);
-
+  );
 };
 
 export default ChapterNav;

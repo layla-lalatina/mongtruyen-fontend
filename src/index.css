@@ -36,3 +36,908 @@
     @apply w-12 h-12 rounded-full object-cover border-2 border-purple-300;
   }
 }
+
+/* Hiệu ứng hạt sáng Irminsul bay lơ lửng */
+@keyframes float-particle {
+  0% {
+    transform: translateY(100%) translateX(0) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(var(--fly-x, 40px)) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.irminsul-particle {
+  position: fixed;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.8) 0%, rgba(52, 211, 153, 0.1) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float-particle var(--fly-duration, 15s) linear infinite;
+  z-index: 0;
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
+}
+
+.glow-emerald-shadow {
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.8), 0 0 5px rgba(52, 211, 153, 0.5);
+}
+
+/* Hiệu ứng tên và khung avatar của Lữ Hành */
+@keyframes rainbow-text {
+  0% { color: #10b981; }
+  25% { color: #3b82f6; }
+  50% { color: #ec4899; }
+  75% { color: #f59e0b; }
+  100% { color: #10b981; }
+}
+.animate-rainbow-text {
+  animation: rainbow-text 6s linear infinite !important;
+}
+.name-glow {
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.8), 0 0 3px rgba(16, 185, 129, 0.4);
+}
+.avatar-frame-gold {
+  outline: 3px solid #fbbf24;
+  outline-offset: 1px;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
+}
+.avatar-frame-emerald {
+  outline: 3px solid #10b981;
+  outline-offset: 1px;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+}
+.avatar-frame-rainbow {
+  outline: 3px solid #ec4899;
+  outline-offset: 1px;
+  animation: rainbow-border 4s linear infinite;
+}
+@keyframes rainbow-border {
+  0% { outline-color: #10b981; box-shadow: 0 0 6px #10b981; }
+  33% { outline-color: #3b82f6; box-shadow: 0 0 6px #3b82f6; }
+  66% { outline-color: #ec4899; box-shadow: 0 0 6px #ec4899; }
+  100% { outline-color: #10b981; box-shadow: 0 0 6px #10b981; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   🌟 UIVERSE / CODEPEN RPG AVATAR FRAMES & SHINY GLOW TITLES (GỖ -> BẠC -> VÀNG -> KIM CƯƠNG -> RỒNG THẦN THOẠI)
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes spin-slow-ring {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes shiny-text-sweep {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse-aura-glow {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+.avatar-ring-spin {
+  animation: spin-slow-ring 6s linear infinite;
+}
+
+.avatar-ring-spin-reverse {
+  animation: spin-slow-ring 9s linear infinite reverse;
+}
+
+.avatar-aura-pulse {
+  animation: pulse-aura-glow 3s ease-in-out infinite;
+}
+
+/* Chữ chuyển sắc Vàng Kim (Shiny Gold Title) */
+.shiny-gold-title {
+  background: linear-gradient(90deg, #b45309 0%, #f59e0b 25%, #fef08a 50%, #f59e0b 75%, #b45309 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shiny-text-sweep 3.5s linear infinite;
+  filter: drop-shadow(0 1px 6px rgba(245, 158, 11, 0.35));
+}
+
+/* Chữ chuyển sắc Xanh Lam / Ánh Sao (Shiny Blue Title) */
+.shiny-blue-title {
+  background: linear-gradient(90deg, #0369a1 0%, #0ea5e9 25%, #bae6fd 50%, #38bdf8 75%, #0369a1 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shiny-text-sweep 3.5s linear infinite;
+  filter: drop-shadow(0 1px 6px rgba(14, 165, 233, 0.45));
+}
+
+/* Chữ chuyển sắc Xanh Lục / Tiên Thảo (Shiny Emerald Title) */
+.shiny-emerald-title {
+  background: linear-gradient(90deg, #047857 0%, #10b981 25%, #a7f3d0 50%, #34d399 75%, #047857 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shiny-text-sweep 3.5s linear infinite;
+  filter: drop-shadow(0 1px 6px rgba(16, 185, 129, 0.45));
+}
+
+/* Chữ chuyển sắc Rực Lửa Đại Năng (Fiery Crimson-Gold Title) */
+.shiny-fire-title {
+  background: linear-gradient(90deg, #dc2626 0%, #f97316 25%, #fde047 50%, #f97316 75%, #dc2626 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shiny-text-sweep 3s linear infinite;
+  filter: drop-shadow(0 1px 8px rgba(249, 115, 22, 0.45));
+}
+
+/* Chữ chuyển sắc Tinh Hà Kim Cương (Diamond Celestial Title) */
+.shiny-diamond-title {
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 25%, #e0f2fe 50%, #818cf8 75%, #0284c7 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shiny-text-sweep 3.2s linear infinite;
+  filter: drop-shadow(0 1px 8px rgba(56, 189, 248, 0.45));
+}
+
+/* Chữ chuyển sắc Thần Thoại Irminsul (Mythic Rainbow Dragon Title) */
+.shiny-mythic-title {
+  background: linear-gradient(90deg, #10b981 0%, #06b6d4 20%, #8b5cf6 40%, #ec4899 60%, #f59e0b 80%, #10b981 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shiny-text-sweep 4s linear infinite;
+  filter: drop-shadow(0 2px 10px rgba(16, 185, 129, 0.45));
+}
+
+/* Thẻ Danh Hiệu Uiverse RGB Glow Card */
+.uiverse-title-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.uiverse-title-card::before {
+  content: "";
+  position: absolute;
+  inset: -120%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #10b981 60deg,
+    #f59e0b 120deg,
+    transparent 180deg,
+    #06b6d4 240deg,
+    #ec4899 300deg,
+    transparent 360deg
+  );
+  animation: spin-slow-ring 5s linear infinite;
+  z-index: -2;
+}
+.uiverse-title-card::after {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.94);
+  z-index: -1;
+}
+.dark-mode .uiverse-title-card::after {
+  background: rgba(15, 23, 42, 0.92);
+}
+
+/* Hiệu ứng hiển thị mượt mà cho cửa sổ chat Nahida */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hoạt ảnh scaleUp cho modal */
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.animate-scale-up {
+  animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Hoạt ảnh rung lắc cho đột phá thất bại */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Hoạt ảnh trượt từ dưới lên cho Toast thông báo */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-slide-in {
+  animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* ═══════════════════════════════════════════════════
+   🌳 HỆ THỐNG PHẨM CHẤT & HIỆU ỨNG IRMINSUL (RPG)
+   ═══════════════════════════════════════════════════ */
+
+/* --- 1. HIỆU ỨNG TÊN (NAME EFFECTS) --- */
+
+/* Ánh Xanh Dịu */
+.name-effect-anh_xanh_diu {
+  color: #a7f3d0 !important;
+  text-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
+}
+/* Ánh Lam */
+.name-effect-anh_lam {
+  color: #93c5fd !important;
+  text-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
+}
+/* Ánh Bạc */
+.name-effect-anh_bac {
+  color: #e2e8f0 !important;
+  text-shadow: 0 0 6px rgba(203, 213, 225, 0.6);
+}
+/* Ngọc Lục Bảo */
+.name-effect-ngoc_luc_bao {
+  color: #10b981 !important;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 0 0 4px rgba(16, 185, 129, 0.4);
+}
+/* Huyễn Mộng */
+@keyframes huyen-mong-pulse {
+  0%, 100% { color: #f472b6; text-shadow: 0 0 8px rgba(244, 114, 182, 0.8); }
+  50% { color: #c084fc; text-shadow: 0 0 12px rgba(192, 132, 252, 0.8); }
+}
+.name-effect-huyen_mong {
+  font-weight: 800;
+  animation: huyen-mong-pulse 3s ease-in-out infinite;
+}
+/* Tinh Tú */
+.name-effect-tinh_tu {
+  color: #fef08a !important;
+  font-weight: 800;
+  text-shadow: 0 0 12px rgba(253, 224, 71, 0.9), 0 0 3px rgba(253, 224, 71, 0.5);
+}
+/* Thiên Hà */
+@keyframes thien-ha-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.name-effect-thien_ha {
+  background: linear-gradient(90deg, #818cf8, #c084fc, #6366f1);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  animation: thien-ha-flow 4s ease infinite;
+  filter: drop-shadow(0 0 2px rgba(99, 102, 241, 0.5));
+}
+/* Tinh Hải */
+.name-effect-tinh_hai_effect {
+  background: linear-gradient(90deg, #22d3ee, #0ea5e9, #38bdf8);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  animation: thien-ha-flow 3s ease infinite;
+  filter: drop-shadow(0 0 3px rgba(14, 165, 233, 0.6));
+}
+/* Cổ Thụ */
+.name-effect-co_thu_effect {
+  color: #047857 !important;
+  font-weight: 800;
+  text-shadow: 0 0 8px rgba(4, 120, 87, 0.7), 0 0 2px rgba(133, 77, 14, 0.4);
+}
+/* Irminsul */
+@keyframes irminsul-glow {
+  0%, 100% { text-shadow: 0 0 8px #10b981, 0 0 15px #34d399; color: #a7f3d0; }
+  50% { text-shadow: 0 0 15px #06b6d4, 0 0 25px #22d3ee; color: #e0f2fe; }
+}
+.name-effect-irminsul_effect {
+  font-weight: 900;
+  animation: irminsul-glow 2.5s ease-in-out infinite;
+}
+/* Ký Ức Thế Giới */
+@keyframes ky-uc-glow {
+  0%, 100% { color: #fef08a; text-shadow: 0 0 10px #eab308; }
+  50% { color: #ffffff; text-shadow: 0 0 20px #f59e0b; }
+}
+.name-effect-ky_uc_the_gioi {
+  font-weight: 900;
+  animation: ky-uc-glow 3s ease-in-out infinite;
+}
+/* Dòng Chảy Vận Mệnh */
+.name-effect-dong_chay_van_menh {
+  background: linear-gradient(90deg, #f43f5e, #f59e0b, #10b981, #3b82f6, #8b5cf6, #f43f5e);
+  background-size: 400% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  animation: thien-ha-flow 6s linear infinite;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.2));
+}
+
+
+/* --- 2. KHUNG AVATAR (AVATAR FRAMES) --- */
+
+/* Hiệu ứng chung khi di chuột */
+.avatar-frame-la_non, .avatar-frame-nhanh_cay, .avatar-frame-tinh_thach,
+.avatar-frame-ngoc_bich, .avatar-frame-tinh_van, .avatar-frame-co_thu,
+.avatar-frame-long_toc, .avatar-frame-phuong_hoang, .avatar-frame-tinh_hai,
+.avatar-frame-mam_cay_the_gioi, .avatar-frame-tan_cay_irminsul, .avatar-frame-vuong_mien_irminsul {
+  transition: all 0.3s ease;
+  padding: 4px !important;
+}
+
+/* Thường */
+.avatar-frame-la_non {
+  background: url('/assets/frames/newbie_frame.png') no-repeat center;
+  background-size: cover;
+  border: none !important;
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+}
+.avatar-frame-nhanh_cay {
+  background: url('/assets/frames/newbie_frame.png') no-repeat center;
+  background-size: cover;
+  filter: hue-rotate(45deg) saturate(0.8);
+  border: none !important;
+}
+.avatar-frame-tinh_thach {
+  outline: 2.5px solid #38bdf8;
+  outline-offset: 1px;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}
+
+/* Hiếm */
+.avatar-frame-ngoc_bich {
+  background: url('/assets/frames/sage_frame.png') no-repeat center;
+  background-size: cover;
+  filter: saturate(1.2);
+  border: none !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+.avatar-frame-tinh_van {
+  outline: 3px solid #8b5cf6;
+  outline-offset: 1px;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.7);
+  animation: border-glow-purple 3s ease-in-out infinite;
+}
+@keyframes border-glow-purple {
+  0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.6); }
+  50% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.9); }
+}
+.avatar-frame-co_thu {
+  background: url('/assets/frames/sage_frame.png') no-repeat center;
+  background-size: cover;
+  border: none !important;
+}
+
+/* Sử Thi */
+.avatar-frame-long_toc {
+  background: url('/assets/frames/traveler_frame.png') no-repeat center;
+  background-size: cover;
+  border: none !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.7);
+}
+.avatar-frame-phuong_hoang {
+  outline: 3.5px solid #f97316;
+  outline-offset: 1px;
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.8);
+  animation: phoenix-breath 2s ease-in-out infinite;
+}
+@keyframes phoenix-breath {
+  0%, 100% { outline-color: #f97316; box-shadow: 0 0 12px rgba(249, 115, 22, 0.7); }
+  50% { outline-color: #ef4444; box-shadow: 0 0 22px rgba(239, 68, 68, 1); }
+}
+.avatar-frame-tinh_hai {
+  outline: 3.5px solid #06b6d4;
+  outline-offset: 1px;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.8);
+}
+
+/* Huyền Thoại */
+.avatar-frame-mam_cay_the_gioi {
+  background: url('/assets/frames/divine_frame.png') no-repeat center;
+  background-size: cover;
+  filter: hue-rotate(90deg);
+  border: none !important;
+  box-shadow: 0 0 18px rgba(52, 211, 153, 0.8);
+}
+.avatar-frame-tan_cay_irminsul {
+  background: url('/assets/frames/divine_frame.png') no-repeat center;
+  background-size: cover;
+  border: none !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+}
+.avatar-frame-vuong_mien_irminsul {
+  background: url('/assets/frames/divine_frame.png') no-repeat center;
+  background-size: cover;
+  border: none !important;
+  box-shadow: 0 0 25px rgba(192, 132, 252, 0.9);
+}
+
+
+/* --- 3. DANH HIỆU LẤP LÁNH (BADGE RARITY GRADIENDS) --- */
+
+.badge-vip-common {
+  background: linear-gradient(135deg, #e6fcf5, #c3fae8) !important;
+  color: #0c8599 !important;
+  border: 1px solid #96f2d7 !important;
+}
+
+.badge-vip-rare {
+  background: linear-gradient(135deg, #e7f5ff, #3b82f6) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.badge-vip-epic {
+  background: linear-gradient(135deg, #f3e8ff, #a855f7, #db2777) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.7);
+  animation: pulse 2.5s infinite;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.badge-vip-legendary {
+  background: linear-gradient(135deg, #fef3c7, #f59e0b, #ea580c) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.badge-vip-legendary::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: rotate(45deg);
+  animation: badge-glint 3s ease-in-out infinite;
+}
+@keyframes badge-glint {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.badge-vip-divine {
+  background: linear-gradient(135deg, #a7f3d0, #06b6d4, #10b981) !important;
+  color: #022c22 !important;
+  border: 1px solid #6ee7b7 !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.9);
+  font-weight: 900;
+  animation: divine-pulse 2s ease-in-out infinite;
+}
+@keyframes divine-pulse {
+  0%, 100% { transform: scale(0.9); box-shadow: 0 0 8px rgba(16, 185, 129, 0.7); }
+  50% { transform: scale(0.93); box-shadow: 0 0 15px rgba(6, 182, 212, 1); }
+}
+
+/* ═══════════════════════════════════════════════════
+   🌙 GIAO DIỆN TỐI (DARK FOREST GREEN THEME OVERRIDES)
+   ═══════════════════════════════════════════════════ */
+html.dark {
+  background-color: #081411 !important;
+}
+
+html.dark body {
+  background-color: #081411 !important;
+  color: #e2f1ec !important;
+}
+
+html.dark .bg-white,
+html.dark .bg-white\/80,
+html.dark .bg-white\/85,
+html.dark .bg-white\/90,
+html.dark .bg-white\/40,
+html.dark .bg-white\/95,
+html.dark .bg-slate-50,
+html.dark .bg-slate-50\/60,
+html.dark .bg-slate-50\/70,
+html.dark .bg-gray-50,
+html.dark .bg-gray-50\/50,
+html.dark .bg-gray-100,
+html.dark .bg-emerald-50\/40,
+html.dark .bg-emerald-50\/30,
+html.dark .bg-emerald-50\/20,
+html.dark .bg-\[\#f3fbf8\] {
+  background-color: rgba(12, 34, 28, 0.88) !important;
+  color: #e2f1ec !important;
+  border-color: rgba(52, 211, 153, 0.22) !important;
+}
+
+.ai-quest-card {
+  background: linear-gradient(135deg, rgba(236, 253, 245, 0.9) 0%, rgba(240, 253, 250, 0.85) 55%, rgba(254, 243, 199, 0.45) 100%);
+}
+
+html.dark .ai-quest-card {
+  background: linear-gradient(135deg, rgba(6, 56, 44, 0.95) 0%, rgba(11, 45, 38, 0.95) 60%, rgba(45, 36, 12, 0.88) 100%) !important;
+  border-color: rgba(52, 211, 153, 0.65) !important;
+  color: #ecfdf5 !important;
+}
+
+html.dark .bg-emerald-50,
+html.dark .bg-emerald-50\/80,
+html.dark .bg-emerald-50\/70,
+html.dark .bg-emerald-50\/60,
+html.dark .bg-emerald-50\/50 {
+  background-color: rgba(16, 185, 129, 0.14) !important;
+  border-color: rgba(52, 211, 153, 0.28) !important;
+}
+
+html.dark .bg-amber-50,
+html.dark .bg-amber-50\/90,
+html.dark .bg-amber-50\/60,
+html.dark .bg-amber-50\/40,
+html.dark .bg-amber-100,
+html.dark .bg-amber-100\/90 {
+  background-color: rgba(245, 158, 11, 0.16) !important;
+  color: #fde68a !important;
+  border-color: rgba(251, 191, 36, 0.38) !important;
+}
+
+html.dark .text-amber-900,
+html.dark .text-amber-800,
+html.dark .text-amber-700 {
+  color: #fcd34d !important;
+}
+
+/* Đè màu chữ tối sang màu sáng dịu mắt */
+html.dark .text-black,
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-gray-700,
+html.dark .text-slate-950,
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark .text-slate-700,
+html.dark .text-emerald-950,
+html.dark .text-emerald-900 {
+  color: #e2f1ec !important;
+}
+
+html.dark .text-gray-500,
+html.dark .text-gray-600,
+html.dark .text-slate-600,
+html.dark .text-slate-500,
+html.dark .text-emerald-700\/80,
+html.dark .text-emerald-700\/70 {
+  color: #a7cbbd !important;
+}
+
+html.dark .text-emerald-800,
+html.dark .text-emerald-700 {
+  color: #34d399 !important;
+}
+
+/* Lịch sử đọc & Danh hiệu */
+html.dark .bg-emerald-100\/60 {
+  background-color: rgba(16, 185, 129, 0.18) !important;
+  color: #34d399 !important;
+  border-color: rgba(52, 211, 153, 0.3) !important;
+}
+
+/* Ô nhập liệu input, select, textarea */
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: rgba(9, 24, 20, 0.95) !important;
+  color: #ffffff !important;
+  border-color: rgba(52, 211, 153, 0.25) !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: rgba(52, 211, 153, 0.4) !important;
+}
+
+/* Hover các phần tử */
+html.dark .hover\:bg-emerald-50:hover,
+html.dark .hover\:bg-emerald-50\/30:hover,
+html.dark .hover\:bg-emerald-50\/50:hover,
+html.dark .hover\:bg-emerald-50\/20:hover {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+/* Shadow đổ bóng tối hơn */
+html.dark .shadow-xl,
+html.dark .shadow-md,
+html.dark .shadow-sm {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Chatbox của Nahida */
+html.dark .comment-box {
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.15), rgba(219, 39, 119, 0.1)) !important;
+  border-color: rgba(168, 85, 247, 0.2) !important;
+}
+html.dark .comment-box input,
+html.dark .comment-box textarea {
+  background-color: rgba(10, 26, 22, 0.9) !important;
+}
+html.dark .comment-username {
+  color: #ffffff !important;
+}
+html.dark .comment-content {
+  color: #e2f1ec !important;
+}
+
+/* Tiêu đề mục mới cập nhật */
+html.dark .bg-emerald-600 {
+  background-color: #047857 !important;
+  color: #ffffff !important;
+}
+
+/* Phân trang */
+html.dark .bg-white\/80 {
+  background-color: rgba(12, 34, 28, 0.8) !important;
+  border-color: rgba(52, 211, 153, 0.15) !important;
+  color: #e2f1ec !important;
+}
+
+html.dark .border-emerald-100 {
+  border-color: rgba(52, 211, 153, 0.12) !important;
+}
+
+/* Custom scrollbar thanh mảnh cho 2 khung cuộn độc lập */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(16, 185, 129, 0.04);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.25);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.5);
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.3) rgba(16, 185, 129, 0.04);
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-left {
+  animation: slideLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* ⚡ HIỆU ỨNG ĐỘT PHÁ CẢNH GIỚI HUYỀN ẢO (BREAKTHROUGH FX) */
+/* ═══════════════════════════════════════════════════════ */
+
+/* Ma pháp trận xoay ngược chiều */
+@keyframes rune-spin-clockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes rune-spin-counter {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+.animate-rune-cw {
+  animation: rune-spin-clockwise 12s linear infinite;
+}
+.animate-rune-ccw {
+  animation: rune-spin-counter 8s linear infinite;
+}
+.animate-rune-fast {
+  animation: rune-spin-clockwise 1.5s linear infinite;
+}
+
+/* Sóng xung kích tỏa năng lượng */
+@keyframes shockwave-expand {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+    border-width: 4px;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+.animate-shockwave {
+  animation: shockwave-expand 1.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+/* Chấn động rung lắc bình cảnh */
+@keyframes breakthrough-tremor {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-3px, -2px) rotate(-1deg); }
+  20% { transform: translate(3px, 2px) rotate(1deg); }
+  30% { transform: translate(-4px, 1px) rotate(-0.5deg); }
+  40% { transform: translate(4px, -1px) rotate(0.5deg); }
+  50% { transform: translate(-2px, 3px) rotate(-1deg); }
+  60% { transform: translate(2px, -3px) rotate(1deg); }
+  70% { transform: translate(-3px, -1px) rotate(-0.5deg); }
+  80% { transform: translate(3px, 1px) rotate(0.5deg); }
+  90% { transform: translate(-1px, 2px) rotate(0deg); }
+}
+.animate-tremor {
+  animation: breakthrough-tremor 0.35s linear infinite;
+}
+
+/* Hào quang vàng kim lấp lánh (Golden Aura Pulse) */
+@keyframes aura-burst {
+  0% {
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.4), 0 0 30px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.9), 0 0 80px rgba(16, 185, 129, 0.8), 0 0 120px rgba(52, 211, 153, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.4), 0 0 30px rgba(16, 185, 129, 0.3);
+  }
+}
+.animate-aura-burst {
+  animation: aura-burst 1.5s ease-in-out infinite;
+}
+
+/* Cột sáng chiếu rọi từ trên trời xuống (Heavenly Pillar) */
+@keyframes divine-beam-descend {
+  0% {
+    opacity: 0;
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  50% {
+    opacity: 0.9;
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  100% {
+    opacity: 0.4;
+    transform: scaleY(1);
+  }
+}
+.animate-divine-beam {
+  animation: divine-beam-descend 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Huy hiệu Cảnh Giới Mới đập mạnh vào tâm màn hình (Stamp effect) */
+@keyframes realm-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(3.5) rotate(-15deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.92) rotate(2deg);
+  }
+  80% {
+    transform: scale(1.05) rotate(-1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+.animate-realm-stamp {
+  animation: realm-stamp 0.65s cubic-bezier(0.2, 1.2, 0.4, 1) forwards;
+}
+
+/* Tia sét / hạt sáng ma thuật nhảy múa */
+@keyframes spark-float {
+  0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-80px) scale(0) rotate(180deg); opacity: 0; }
+}
+.animate-spark {
+  animation: spark-float 1.2s ease-out infinite;
+}
+
+/* Tia sáng Thần Thánh xoay tròn (Heavenly Sunburst Rays) */
+@keyframes sunburst-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-sunburst {
+  animation: sunburst-spin 25s linear infinite;
+}
+
+/* Lóe sáng toàn màn hình khi đột phá (Screen Flash) */
+@keyframes flash-fade {
+  0% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+.animate-flash {
+  animation: flash-fade 0.7s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+/* Cổ tự ma pháp bay lượn (Floating Mystic Runes) */
+@keyframes rune-float-up {
+  0% {
+    transform: translateY(20px) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-90px) rotate(25deg) scale(1.1);
+    opacity: 0;
+  }
+}
+.animate-rune-float {
+  animation: rune-float-up 3s ease-in-out infinite;
+}
+
+/* Hào quang rực rỡ của ấn ký cảnh giới mới */
+@keyframes badge-glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.7)) drop-shadow(0 0 35px rgba(16, 185, 129, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(245, 158, 11, 1)) drop-shadow(0 0 65px rgba(52, 211, 153, 0.9));
+  }
+}
+.animate-badge-glow {
+  animation: badge-glow-pulse 2s ease-in-out infinite;
+}
+
+/* Thanh cuộn siêu mảnh phong cách Gemini */
+.gemini-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.gemini-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.gemini-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.35);
+  border-radius: 9999px;
+}
+.gemini-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.7);
+}

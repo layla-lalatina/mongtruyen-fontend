@@ -1,18 +1,24 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { API_BASE_URL } from "../../../config";
 
 const Breadcrumbs = ({ links, current }) => (
-  <div className="text-xs text-gray-500 mb-2">
-    {links.map((link, i) => (
-      <span key={i}>
-        <Link to={link.to} className="hover:underline text-blue-700">
+  <div className="mb-6 text-sm text-emerald-800 flex flex-wrap items-center gap-1 font-medium">
+    {links.filter(link => link.to).map((link, i) => (
+      <React.Fragment key={i}>
+        {i > 0 && <span className="text-emerald-300 mx-1">/</span>}
+        <Link to={link.to} className="hover:underline text-emerald-700 hover:text-emerald-500 transition-colors">
           {link.label}
         </Link>
-        {i < links.length - 1 && " » "}
-      </span>
+      </React.Fragment>
     ))}
-    <span className="font-semibold">{current}</span>
+    {current && (
+      <>
+        <span className="text-emerald-300 mx-1">/</span>
+        <span className="font-bold text-emerald-950 bg-emerald-100/60 px-2.5 py-0.5 rounded-lg border border-emerald-200/50 truncate max-w-[280px] sm:max-w-md" title={current}>
+          {current}
+        </span>
+      </>
+    )}
   </div>
 );
 

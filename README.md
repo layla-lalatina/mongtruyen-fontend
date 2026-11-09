@@ -1,2 +1,1 @@
-"# mongtruyen" 
 "# truyentranh" 

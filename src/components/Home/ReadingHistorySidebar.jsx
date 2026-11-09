@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useReadingHistory } from "../Read/hooks/useReadingHistory";
 import { API_BASE_URL } from "../../../config";
+import { getComicThumbUrl } from "../../utils/imageHelpers";
 
 const ReadingHistorySidebar = ({ user }) => {
   const { readingHistory } = useReadingHistory({
@@ -38,13 +39,13 @@ const ReadingHistorySidebar = ({ user }) => {
               <li key={item.slug} className="flex items-center gap-2">
                 <Link to={`/truyen/${item.slug}`}>
                   <img
-                    src={
-                      item.thumb_url.startsWith("http")
-                        ? item.thumb_url
-                        : `https://img.otruyenapi.com/uploads/comics/${item.thumb_url}`
-                    }
+                    src={getComicThumbUrl(item.thumb_url)}
                     alt={item.name}
                     className="w-8 h-12 object-cover rounded border"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/default-cover.jpg";
+                    }}
                   />
                 </Link>
                 <div className="flex-1 min-w-0">

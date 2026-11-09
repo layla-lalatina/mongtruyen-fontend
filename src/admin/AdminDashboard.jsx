@@ -6,15 +6,17 @@ import axios from "axios";
 import AccountsManager from "./components/AccountsManager";
 import ComicsManager from "./components/ComicsManager";
 import MessagesManager from "./components/MessagesManager";
-import DepositStats from "./components/DepositStats";
+import SQLManager from "./components/SQLManager";
+import AdminStats from "./components/AdminStats";
+import AdminTasksManager from "./components/AdminTasksManager";
+import AdminAnomalyDetection from "./components/AdminAnomalyDetection";
 import { API_BASE_URL } from "../../config";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("accounts");
+  const [activeTab, setActiveTab] = useState("stats");
   const [users, setUsers] = useState([]);
   const [comics, setComics] = useState([]);
   const [comments, setComments] = useState([]);
-  const [deposits, setDeposits] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -25,6 +27,14 @@ const AdminDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  // Chặn đứng người dùng không có quyền admin
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    if (!parsedUser || parsedUser.role?.toLowerCase() !== "admin") {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const getToken = () => {
     const storedUser = localStorage.getItem("user");
@@ -36,6 +46,11 @@ const AdminDashboard = () => {
     const p = parseInt(searchParams.get("page") || "1", 10);
     setPage(isNaN(p) || p < 1 ? 1 : p);
   }, [searchParams]);
+
+  // Cuộn lên đầu trang khi chuyển tab hoặc đổi trang
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab, page]);
 
   // Fetch dữ liệu theo tab
   useEffect(() => {
@@ -62,16 +77,18 @@ const AdminDashboard = () => {
           case "comics":
             {
               const res = await axios.get(
-                `https://otruyenapi.com/v1/api/danh-sach?type=truyen-moi&page=${page}`
+                `${API_BASE_URL}/api/comic/comics?page=${page}&limit=24`
               );
-              setComics(res.data.data?.items || []);
-              const pagination = res.data.data?.params?.pagination;
-              setTotalPages(
-                pagination
-                  ? Math.ceil(pagination.totalItems / pagination.totalItemsPerPage)
-                  : 1
-              );
-              setTotalComics(pagination?.totalItems || 0);
+              const items = (res.data.comics || res.data.data?.items || []).map(c => ({
+                ...c,
+                _id: c.slug,
+                name: c.name || c.title,
+                slug: c.slug,
+                thumb_url: c.thumb_url || c.thumbUrl,
+              }));
+              setComics(items);
+              setTotalPages(res.data.totalPages || 1);
+              setTotalComics(res.data.totalItems || 0);
             }
             break;
           case "messages":
@@ -80,14 +97,6 @@ const AdminDashboard = () => {
                 headers: { Authorization: `Bearer ${token}` },
               });
               setComments(res.data.comments || []);
-            }
-            break;
-          case "deposits":
-            {
-              const res = await axios.get(`${API_BASE_URL}/api/deposit`, {
-                headers: { Authorization: `Bearer ${token}` },
-              });
-              setDeposits(res.data.deposits || []);
             }
             break;
           default:
@@ -125,6 +134,41 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bình luận này không?")) return;
+    try {
+      const token = getToken();
+      if (!token) return;
+      await axios.delete(`${API_BASE_URL}/api/comment/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      setError(null);
+    } catch (err) {
+      console.error("Lỗi khi xóa bình luận:", err);
+      alert(err.response?.data?.message || "Lỗi khi xóa bình luận.");
+    }
+  };
+
+  const handleModerateComment = async (commentId, status) => {
+    try {
+      const token = getToken();
+      if (!token) return;
+      await axios.post(
+        `${API_BASE_URL}/api/comment/moderate/${commentId}`,
+        { status },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setComments((prev) =>
+        prev.map((c) => (c.id === commentId ? { ...c, status, isReported: status === "active" ? false : c.isReported } : c))
+      );
+      setError(null);
+    } catch (err) {
+      console.error("Lỗi khi kiểm duyệt bình luận:", err);
+      alert(err.response?.data?.message || "Lỗi khi kiểm duyệt bình luận.");
+    }
+  };
+
   const goToPage = (p) => {
     if (p >= 1 && p <= totalPages) {
       setSearchParams({ page: p });
@@ -132,71 +176,116 @@ const AdminDashboard = () => {
   };
 
   return (
-<div className="min-h-screen bg-gray-100 text-black font-sans">
-  <div className="flex flex-col md:flex-row max-w-7xl mx-auto">
-    {/* Sidebar */}
-    <aside className="w-full md:w-64 bg-gray-800 text-white p-4 flex-shrink-0">
-      <h2 className="text-2xl font-bold mb-6 text-center md:text-left">Quản lý Admin</h2>
-      <ul className="grid grid-cols-2 md:block gap-2">
-        {[
-          { key: "accounts", label: "Tài khoản" },
-          { key: "messages", label: "Bình luận" },
-          { key: "comics", label: "Danh sách truyện" },
-          { key: "deposits", label: "Nạp Linh Thạch" },
-        ].map((tab) => (
-          <li
-            key={tab.key}
-            className={`p-3 rounded-lg cursor-pointer text-sm text-center md:text-left transition-colors ${
-              activeTab === tab.key
-                ? "bg-[#2196f3] text-white"
-                : "hover:bg-gray-600"
-            }`}
-            onClick={() => setActiveTab(tab.key)}
-          >
-            {tab.label}
-          </li>
-        ))}
-      </ul>
-    </aside>
+    <div className="bg-[#f3fbf8] min-h-screen relative overflow-hidden pt-14 text-black">
+      {/* Hiệu ứng các hạt sáng bay Irminsul ở nền */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        {[...Array(12)].map((_, i) => {
+          const size = Math.random() * 8 + 4;
+          const left = Math.random() * 100;
+          const delay = Math.random() * 15;
+          const duration = Math.random() * 20 + 10;
+          const flyX = (Math.random() * 100 - 50) + "px";
+          return (
+            <div
+              key={i}
+              className="irminsul-particle"
+              style={{
+                width: `${size}px`,
+                height: `${size}px`,
+                left: `${left}%`,
+                animationDelay: `${delay}s`,
+                "--fly-duration": `${duration}s`,
+                "--fly-x": flyX,
+              }}
+            />
+          );
+        })}
+      </div>
 
-    {/* Main content */}
-    <main className="flex-1 p-4 md:p-6 w-full overflow-x-auto">
-      {loading && (
-        <p className="text-gray-500 text-lg">Đang tải dữ liệu...</p>
-      )}
-      {error && (
-        <p className="text-red-500 text-lg mb-4">{error}</p>
-      )}
+      {/* Main Layout */}
+      <div className="w-full flex flex-col md:flex-row relative z-10">
+        {/* Sidebar */}
+        <aside className="w-full md:w-64 bg-emerald-950 text-white p-5 border-r border-emerald-800 shadow-sm flex flex-col md:fixed md:top-14 md:bottom-0 md:left-0 z-30 overflow-y-auto">
+          <h2 className="text-xl font-extrabold mb-6 text-center md:text-left flex items-center gap-2 border-b border-emerald-800 pb-3">
+            <span>Bí Cảnh Admin 🌳</span>
+          </h2>
+          <ul className="grid grid-cols-2 md:block gap-2.5">
+            {[
+              { key: "stats", label: "📊 Thống kê hệ thống" },
+              { key: "accounts", label: "👤 Tài khoản" },
+              { key: "messages", label: "💬 Bình luận" },
+              { key: "comics", label: "📖 Danh sách truyện" },
+              { key: "tasks", label: "📜 Quản lý nhiệm vụ" },
+              { key: "anomalies", label: "🛡️ AI Cảnh báo rủi ro" },
+              { key: "sql", label: "🗄️ Quản lý SQL" },
+            ].map((tab) => (
+              <li
+                key={tab.key}
+                className={`p-3 rounded-xl cursor-pointer text-xs sm:text-sm font-bold text-center md:text-left transition-all ${
+                  activeTab === tab.key
+                    ? "bg-emerald-600 text-white shadow-sm shadow-emerald-500/20"
+                    : "text-emerald-100 hover:bg-emerald-900/60 hover:text-white"
+                }`}
+                onClick={() => setActiveTab(tab.key)}
+              >
+                {tab.label}
+              </li>
+            ))}
+          </ul>
+        </aside>
 
-      {activeTab === "accounts" && (
-        <AccountsManager
-          users={users}
-          loading={loading}
-          error={error}
-          handleRoleChange={handleRoleChange}
-        />
-      )}
-      {activeTab === "messages" && (
-        <MessagesManager comments={comments} />
-      )}
-      {activeTab === "comics" && (
-        <ComicsManager
-          comics={comics}
-          totalComics={totalComics}
-          page={page}
-          totalPages={totalPages}
-          goToPage={goToPage}
-        />
-      )}
-      {activeTab === "deposits" && (
-        <DepositStats
-          deposits={deposits}
-          refresh={() => setActiveTab("deposits")}
-        />
-      )}
-    </main>
-  </div>
-</div>
+        {/* Main Content Area */}
+        <div className="flex-1 md:pl-64 flex flex-col p-4 md:p-6 w-full min-w-0 min-h-[calc(100vh-56px)]">
+          <main className="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl shadow-emerald-100/40 border border-emerald-100/50 p-4 md:p-8 flex-1 w-full overflow-x-auto">
+            {loading && (
+              <div className="flex items-center gap-2 text-emerald-800 font-bold mb-4 py-4 animate-pulse">
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-emerald-600"></div>
+                <span>Đang đồng bộ ký ức từ Cây Thế Giới...</span>
+              </div>
+            )}
+            {error && (
+              <div className="text-red-500 text-sm font-bold mb-4 bg-red-50 border border-red-100 p-4 rounded-xl shadow-inner">
+                ⚠️ {error}
+              </div>
+            )}
+
+            {!loading && (
+              <>
+                {activeTab === "stats" && (
+                  <AdminStats />
+                )}
+                {activeTab === "accounts" && (
+                  <AccountsManager
+                    handleRoleChange={handleRoleChange}
+                  />
+                )}
+                {activeTab === "messages" && (
+                  <MessagesManager comments={comments} onDeleteComment={handleDeleteComment} onModerateComment={handleModerateComment} />
+                )}
+                {activeTab === "comics" && (
+                  <ComicsManager
+                    comics={comics}
+                    totalComics={totalComics}
+                    page={page}
+                    totalPages={totalPages}
+                    goToPage={goToPage}
+                  />
+                )}
+                {activeTab === "tasks" && (
+                  <AdminTasksManager />
+                )}
+                {activeTab === "anomalies" && (
+                  <AdminAnomalyDetection />
+                )}
+                {activeTab === "sql" && (
+                  <SQLManager />
+                )}
+              </>
+            )}
+          </main>
+        </div>
+      </div>
+    </div>
 
   );
 };

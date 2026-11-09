@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Pagination from "./Pagination";
+import AgeBadge from "../Common/AgeBadge";
 import { API_BASE_URL } from "../../../config";
+import { getComicThumbUrl } from "../../utils/imageHelpers";
 
 const NewComics = ({ selectedCategory }) => {
   const [comics, setComics] = useState([]);
@@ -11,7 +13,6 @@ const NewComics = ({ selectedCategory }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const cdnDomain = "https://img.otruyenapi.com";
 
   useEffect(() => {
     const p = parseInt(searchParams.get("page") || "1", 10);
@@ -22,15 +23,11 @@ const NewComics = ({ selectedCategory }) => {
     setLoading(true);
     setError(null);
 
-    fetch(`https://otruyenapi.com/v1/api/danh-sach?type=truyen-moi&page=${page}`)
+    fetch(`${API_BASE_URL}/api/comic/comics?page=${page}&limit=24`)
       .then((res) => res.json())
       .then((data) => {
-        setComics(data.data?.items || []);
-        const pagination = data.data?.params?.pagination;
-        const total = pagination
-          ? Math.ceil(pagination.totalItems / pagination.totalItemsPerPage)
-          : 1;
-        setTotalPages(total);
+        setComics(data.comics || data.data?.items || []);
+        setTotalPages(data.totalPages || 1);
         setLoading(false);
       })
       .catch((err) => {
@@ -73,13 +70,12 @@ const NewComics = ({ selectedCategory }) => {
           >
             <div className="relative w-full aspect-[3/4] overflow-hidden">
               <img
-                src={
-                  item.thumb_url
-                    ? `https://img.otruyenapi.com/uploads/comics/${item.thumb_url}`
-                    : "/default-avatar.png"
-
-                }
-                alt={item.name}
+                src={getComicThumbUrl(item.thumb_url || item.thumbUrl)}
+                alt={item.name || item.title}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/default-cover.jpg";
+                }}
                 className="w-full h-full object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-200 border-b border-gray-300"
                 loading="lazy"
               />
@@ -88,6 +84,9 @@ const NewComics = ({ selectedCategory }) => {
                   HOT
                 </span>
               )}
+              <div className="absolute top-2 left-2">
+                <AgeBadge rating={item.ageRating || item.age_rating || "ALL"} size="xs" />
+              </div>
             </div>
             <div className="p-2 flex flex-col gap-1">
               <h3 className="text-base font-bold text-black group-hover:text-[#ffb300] line-clamp-2 min-h-[2.5em] leading-tight">

@@ -1,3 +1,13 @@
+/**
+ * 🌳 SYSTEM: IRMINSUL FANTASY RPG - FOOTER
+ * ==========================================================
+ * @file Footer.jsx
+ * @path fontend/src/components/Footer.jsx
+ * @description Renders the application's bottom footer with links, copyright information,
+ * and credits relating to the Irminsul RPG project.
+ * ==========================================================
+ */
+
 import React from "react";
 import { API_BASE_URL } from "../../config";
 
